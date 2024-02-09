@@ -1,0 +1,14 @@
+body {
+  background-color: #f8f9fa;
+}
+
+
+.card-title {
+    color: #343a40;
+    font-weight: 700;
+    
+}
+.card-text {
+  color: #6c757d;
+  font-weight: 500;
+}
