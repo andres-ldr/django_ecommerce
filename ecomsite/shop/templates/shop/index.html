@@ -59,7 +59,6 @@
                       data-bs-container="body"
                       data-bs-toggle="popover"
                       data-bs-placement="bottom"
-                      data-bs-content="Bottom popover"
                     >
                       Cart (0)
                     </button>
@@ -102,7 +101,9 @@
           <div class="card">
             <img src="{{ product.image }}" class="card-img-top" />
             <div class="card-body">
-              <div class="card-title">{{ product.title }}</div>
+              <div id="item-{{ product.id }}" class="card-title">
+                {{ product.title }}
+              </div>
               <div class="card-text">$ {{product.price}}</div>
               <a href="/{{ product.id }}" class="btn btn-warning">View</a>
               <button id="{{ product.id }}" class="btn btn-warning link-atc">
@@ -146,19 +147,35 @@
     </div>
   </body>
   <script type="text/javascript">
-    $(() => {
-      const popoverTriggerList = document.querySelectorAll(
-        '[data-bs-toggle="popover"]'
-      );
-      const popoverList = [...popoverTriggerList].map(
-        (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
-      );
+    const getItems = () => {
       let cart;
       if (!localStorage.getItem('cart')) {
         cart = {};
       } else {
         let cart = JSON.parse(localStorage.getItem('cart'));
       }
+      return cart;
+    };
+
+    const displayCart = (cart) => {
+      let cartString = '';
+      cartString += '<h5>This is your cart</h5>';
+      let cartIndex = 1;
+      for (let id in cart) {
+        cartString += `${cartIndex} ${$('#item-' + id).html()} Qty: ${
+          cart[id]
+        }<br>`;
+        cartIndex++;
+      }
+      return cartString;
+    };
+
+    $(() => {
+      let cart = getItems();
+      const popover = new bootstrap.Popover($('#cart'), {
+        html: true,
+        content: displayCart(cart),
+      });
 
       $(document).on('click', '.link-atc', function () {
         let id = this.id.toString();
@@ -169,9 +186,10 @@
         }
         localStorage.setItem('cart', JSON.stringify(cart));
         $('#cart').text('Cart (' + Object.keys(cart).length + ')');
+        popover.setContent({
+          '.popover-body': displayCart(cart),
+        });
       });
-
-      $('#cart').text('Cart (' + Object.keys(cart).length + ')');
     });
   </script>
 </html>
