@@ -101,10 +101,10 @@
           <div class="card">
             <img src="{{ product.image }}" class="card-img-top" />
             <div class="card-body">
-              <div id="item-{{ product.id }}" class="card-title">
-                {{ product.title }}
+              <div id="item-{{ product.id }}" class="card-title">{{ product.title }}</div>
+              <div id="price{{product.id}}" class="card-text">
+                {{product.price}}
               </div>
-              <div class="card-text">$ {{product.price}}</div>
               <a href="/{{ product.id }}" class="btn btn-warning">View</a>
               <button id="{{ product.id }}" class="btn btn-warning link-atc">
                 Add to cart
@@ -152,7 +152,7 @@
       if (!localStorage.getItem('cart')) {
         cart = {};
       } else {
-        let cart = JSON.parse(localStorage.getItem('cart'));
+        cart = JSON.parse(localStorage.getItem('cart'));
       }
       return cart;
     };
@@ -163,10 +163,12 @@
       let cartIndex = 1;
       for (let id in cart) {
         cartString += `${cartIndex} ${$('#item-' + id).html()} Qty: ${
-          cart[id]
+          cart[id][0]
         }<br>`;
         cartIndex++;
       }
+      cartString +=
+        '<a id="checkout-btn" href="/checkout" class="btn btn-warning">Checkout</a>';
       return cartString;
     };
 
@@ -179,10 +181,16 @@
 
       $(document).on('click', '.link-atc', function () {
         let id = this.id.toString();
-        if (!cart[id]) {
-          cart[id] = 1;
+        let quantity = 0;
+        if (cart[id]) {
+          quantity = cart[id][0] + 1;
+          cart[id][0] = quantity;
+          cart[id][2] += parseFloat($('#price' + id).html());
         } else {
-          cart[id] += 1;
+          quantity = 1;
+          price = parseFloat($('#price' + id).html());
+          let name = $('#item-' + id).html();
+          cart[id] = [quantity, name, price];
         }
         localStorage.setItem('cart', JSON.stringify(cart));
         $('#cart').text('Cart (' + Object.keys(cart).length + ')');
