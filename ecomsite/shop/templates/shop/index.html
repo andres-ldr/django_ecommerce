@@ -101,7 +101,9 @@
           <div class="card">
             <img src="{{ product.image }}" class="card-img-top" />
             <div class="card-body">
-              <div id="item-{{ product.id }}" class="card-title">{{ product.title }}</div>
+              <div id="item-{{ product.id }}" class="card-title">
+                {{ product.title }}
+              </div>
               <div id="price{{product.id}}" class="card-text">
                 {{product.price}}
               </div>
@@ -161,10 +163,9 @@
       let cartString = '';
       cartString += '<h5>This is your cart</h5>';
       let cartIndex = 1;
-      for (let id in cart) {
-        cartString += `${cartIndex} ${$('#item-' + id).html()} Qty: ${
-          cart[id][0]
-        }<br>`;
+      let cartObject = JSON.parse(localStorage.getItem('cart'));
+      for (let id in cartObject) {
+        cartString += `${cartIndex} ${cartObject[id][1]} Qty: ${cart[id][0]}<br>`;
         cartIndex++;
       }
       cartString +=
